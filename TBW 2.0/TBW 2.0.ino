@@ -16,6 +16,10 @@ This cycle repeats until the motors no longer receive power.
 #define enB 8
 #define in1B 9
 #define in2B 10
+//define pin locations
+const int sensor = ********;///add pin location
+//define location to store sensor value
+bool val;
 
 void setup() {
   // initialize serial communication
@@ -34,6 +38,9 @@ void setup() {
   // enable wheel and launch motor by setting enA and enB to high permanently
   digitalWrite(enA, HIGH);
   digitalWrite(enB, HIGH);
+
+  //define SensorPin as input
+  pinMode(sensor, INPUT);
 }
 
 // Declaring Functions:
@@ -87,15 +94,27 @@ void stopMotor2(int time)
 }
 
 void loop() {
- 
-runMotor1Forward(1500);
-runMotor2Forward(1500);
-stopMotor1(1500);
-stopMotor2(1500);
-runMotor1Backward(1500);
-runMotor2Backward(1500);
 
 delay(1500);
+
+val = digitalRead(sensor);
+  runMotor2Forward(1500);
+  stopMotor2(1500);
+
+if(val == HIGH){
+  Serial.println("Stop line detected")
+  stopMotor1(1500);
+  runMotor1Backward(1500);
+
+}  
+else
+{
+  Serial.println("No stop line detected")
+  runMotor1Forward(1500);
+
+}
+
+
 
 
 }

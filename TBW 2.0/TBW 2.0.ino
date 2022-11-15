@@ -1,10 +1,12 @@
 /************************************************************************
 
-Teddy Bear wheelchair project program V2.0
+Teddy Bear wheelchair project program V3.0
 
-This program turns on two motors, "wheel" and "launch". Then runs the motors forward
-for 1500 milliseconds, stops for 1500 millisecondss backwards for 1500 milliseconds, then stops for 1500 milliseconds.
-This cycle repeats until the motors no longer receive power.
+This program has the added feature of an IR sensor. The wheel motor will
+turn forward until it encounters a blackline. Then, the motor will continue to
+spin forward for 1500 ms (to be changed when precice time is determined), stop
+for 1500 ms, spin backwards for 1500 ms (also to be changed when precise time is
+determined), then stop indefinetly.
 
 *************************************************************************/
 
@@ -16,10 +18,12 @@ This cycle repeats until the motors no longer receive power.
 #define enB 8
 #define in1B 9
 #define in2B 10
+
 //define pin locations
-const int sensor = ********;///add pin location
+const int sensor = 6;///add pin location
 //define location to store sensor value
 bool val;
+int Case = 1;
 
 void setup() {
   // initialize serial communication
@@ -67,6 +71,7 @@ void runMotor1Backward(int time)
   digitalWrite(in2A, HIGH);
   Serial.println("Spinning motor 1 backward");
   delay(time);
+
 }
 // Run launch motor backward
 void runMotor2Backward(int time)
@@ -81,7 +86,7 @@ void stopMotor1(int time)
 {
   digitalWrite(in1A, LOW);
   digitalWrite(in2A, LOW);
-  Serial.println("Wheel motor Stopped");
+  Serial.println("***Wheel motor Stopped");
   delay(time);
 }
 // Stop Launch motor
@@ -98,22 +103,28 @@ void loop() {
 delay(1500);
 
 val = digitalRead(sensor);
-  runMotor2Forward(1500);
-  stopMotor2(1500);
 
-if(val == HIGH){
-  Serial.println("Stop line detected")
-  stopMotor1(1500);
-  runMotor1Backward(1500);
-
-}  
-else
+while (val == HIGH && Case == 1)
 {
-  Serial.println("No stop line detected")
-  runMotor1Forward(1500);
+  delay(1500);
+  Serial.println("stop line detected");
+  runMotor1Forward(1500); /// ****insert time it takes to get from black line to required stop position
+  stopMotor1(1500);
+  runMotor1Backward(1500);/// ****insert time it takes to get from stop point to back to the start of the course
+  Case=2;
+    break;
+  }
 
+if (Case == 1)
+{
+runMotor1Forward();
 }
 
+else if (Case == 2)
+{
+Serial.println("END OF THE COURSE :)");
+stopMotor1(1500);
+}
 
 
 
